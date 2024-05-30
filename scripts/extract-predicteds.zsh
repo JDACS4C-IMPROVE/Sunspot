@@ -21,7 +21,8 @@ renice --priority 19 ${$}
 COUNT=1
 for TGZ in ${TGZS}
 do
-  printf "%3i %s\n" ${COUNT} ${TGZ}
+  printf "%5i / %i : %s\n" ${COUNT} ${TOTAL} ${TGZ}
+  # Get dirname:
   DIR=${TGZ:h}
   # print $DIR
   if ! tar --wildcards -tf ${TGZ} "*predicted.tsv" > /dev/null
@@ -31,4 +32,5 @@ do
   tar --wildcards -C ${OUTPUT} -xvf ${TGZ} "*predicted.tsv"
   TSVS=( $( find ${OUTPUT} -name predicted.tsv ) )
   print "EXTRACTED: ${#TSVS}"
+  (( COUNT ++ ))
 done
