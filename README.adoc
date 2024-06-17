@@ -3,7 +3,7 @@
 == Installation
 
 . Download Miniconda
-. bash -b -p PREFIX Miniconda...sh
+. bash Miniconda...sh -b -p PREFIX
 . Activate the Miniconda in PREFIX
 . conda install pandas
 . pip install tensorflow
