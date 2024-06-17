@@ -17,3 +17,10 @@
 . git checkout develop
 . cd Pilot1/Uno
 . python uno_baseline_keras2.py
+
+## Uno usage from this repo
+
+. Point to Uno from the Benchmarks repo
+. export PYTHONPATH=/path/to/Benchmarks/Pilot1/Uno
+. Run the uno_baseline_keras2.py in this repo
+. python ./uno_baseline_keras2.py
