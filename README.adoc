@@ -27,4 +27,7 @@ $ export PYTHONPATH=/path/to/Benchmarks/Pilot1/Uno
 ----
 +
 . Run the uno_baseline_keras2.py in this repo
-. python ./uno_baseline_keras2.py
++
+----
+$ python ./uno_baseline_keras2.py
+----
