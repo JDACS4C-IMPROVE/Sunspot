@@ -1,32 +1,5 @@
 #!/bin/bash
 
-echo "PBS_JOBID $PBS_JOBID"
-
-# function to copy data when done
-copy_data() {
-	# Copy only python.log and predicted.tsv back to submit host
-        cd $LOCAL_PREFIX/save/
-        
-	# copy 
-	# find . -name python.log -exec tar -rf $LOCAL_PREFIX/save/$PBS_JOBID.tar {} \;
-        # find . -name predicted.tsv -exec tar -rf $LOCAL_PREFIX/save/$PBS_JOBID.tar {} \;
-        # find . -name *.model.h5 -exec tar -rf $LOCAL_PREFIX/save/$PBS_JOBID.tar {} \;
-
-	# copy everything.
-	find . -exec tar -rf $LOCAL_PREFIX/save/$PBS_JOBID.tar {} \;
-
-        gzip $LOCAL_PREFIX/save/$PBS_JOBID.tar
-
-        # Common to both
-        mkdir -p $GLOBAL_PREFIX/save/$PBS_JOBID/$(hostname)/
-        cp $LOCAL_PREFIX/save/$PBS_JOBID.tar.gz $GLOBAL_PREFIX/save/$PBS_JOBID/$(hostname)/
-        echo "$(date) DONE_COPYING_RESULTS_uno_baseline_keras2.py from $(hostname)"
-
-}
-# Set trap to call copy_data when receiving SIGTERM
-#trap 'copy_data' SIGTERM
-
-
 if [[ -v MPI_LOCALRANKID ]]; then
   _MPI_RANKID=$MPI_LOCALRANKID
 elif [[ -v PALS_LOCAL_RANKID ]]; then
@@ -35,6 +8,20 @@ else
   echo "could not get RANK"
   exit
 fi
+
+# function to copy data when done
+copy_data() {
+        cd $LOCAL_PREFIX/save/
+	find . -name python.log -exec tar -rf $LOCAL_PREFIX/save/$PBS_JOBID.tar {} \;
+        find . -name predicted.tsv -exec tar -rf $LOCAL_PREFIX/save/$PBS_JOBID.tar {} \;
+	find . -name log.txt -exec tar -rf $LOCAL_PREFIX/save/$PBS_JOBID.tar {} \;
+	find . -name "*.png" -exec tar -rf $LOCAL_PREFIX/save/$PBS_JOBID.tar {} \;
+	# find . -name *.model.h5 -exec tar -rf $LOCAL_PREFIX/save/$PBS_JOBID.tar {} \;
+
+        gzip $LOCAL_PREFIX/save/$PBS_JOBID.tar
+        mkdir -p $GLOBAL_PREFIX/save/$PBS_JOBID/$(hostname)/
+        cp $LOCAL_PREFIX/save/$PBS_JOBID.tar.gz $GLOBAL_PREFIX/save/$PBS_JOBID/$(hostname)/
+}
 
 GLOBAL_PREFIX=${GLOBAL_PREFIX:-"/home/brettin/CSC249ADOA01_CNDA/brettin/Benchmarks/Pilot1/Uno"}
 UNO_DIR=${UNO_DIR:-"/home/brettin/CSC249ADOA01_CNDA/brettin/Benchmarks/Pilot1/Uno"}
@@ -78,13 +65,13 @@ python $UNO_DIR/uno_baseline_keras2.py \
 	--experiment_id=$PBS_JOBID --run_id=$PALS_RANKID                            \
 	--save_weights $LOCAL_PREFIX/save/$PBS_JOBID/$PALS_RANKID/$ZE_AFFINITY_MASK.model.h5  \
 	> $LOCAL_PREFIX/save/$PBS_JOBID/$PALS_RANKID/log.txt 2>&1
+
 echo "$(date) DONE_CALLING_uno_baseline_keras2.py"
 
-
 # wait for all ranks on this node to finish
-echo "calling copy on rank $_MPI_RANKID"
+# echo "calling copy on rank $_MPI_RANKID"
 if [[ "$_MPI_RANKID" == 0 ]] ; then
-	echo "in copy loop on rank $_MPI_RANKID"
+	#echo "in copy loop on rank $_MPI_RANKID"
 	echo "$(date) START_COPYING_RESULTS_uno_baseline_keras2.py from $(hostname)"
 	# fcount=$(find $LOCAL_PREFIX/save/ -name "*.h5" | wc -l)
 	fcount=$(find $LOCAL_PREFIX/save/ -name "predicted.tsv" | wc -l)
@@ -92,24 +79,16 @@ if [[ "$_MPI_RANKID" == 0 ]] ; then
 		sleep 3
 		#fcount=$(find $LOCAL_PREFIX/save/ -name "*.h5" | wc -l)
 		fcount=$(find $LOCAL_PREFIX/save/ -name "predicted.tsv" | wc -l)
-		echo "in wait loop on $(hostname) local_rank $_MPI_RANKID"
-		echo "found ${fcount} predicted.tsv files"
+		#echo "in wait loop on $(hostname) local_rank $_MPI_RANKID"
+		#echo "found ${fcount} predicted.tsv files"
 	done
-	echo "out of wait loop on $(hostname) local_rank $_MPI_RANKID"
+	#echo "out of wait loop on $(hostname) local_rank $_MPI_RANKID"
 	copy_data
-	# Copy everyting back to submit host
-	# tar -czf $LOCAL_PREFIX/save/$PBS_JOBID.tar.gz $LOCAL_PREFIX/save/$PBS_JOBID
-		
-	# Copy only python.log and predicted.tsv back to submit host
-	# cd $LOCAL_PREFIX/save/
-	# find . -name python.log -exec tar -rf $LOCAL_PREFIX/save/$PBS_JOBID.tar {} \;
-	# find . -name predicted.tsv -exec tar -rf $LOCAL_PREFIX/save/$PBS_JOBID.tar {} \;
-	# #find . -name *.model.h5 -exec tar -rf $LOCAL_PREFIX/save/$PBS_JOBID.tar {} \;
-
-	# gzip $LOCAL_PREFIX/save/$PBS_JOBID.tar
-
-	# Common to both
-	# mkdir -p $GLOBAL_PREFIX/save/$PBS_JOBID/$(hostname)/
-	# cp $LOCAL_PREFIX/save/$PBS_JOBID.tar.gz $GLOBAL_PREFIX/save/$PBS_JOBID/$(hostname)/
-	# echo "$(date) DONE_COPYING_RESULTS_uno_baseline_keras2.py from $(hostname)"
+	echo "$(date) DONE_COPYING_RESULTS_uno_baseline_keras2.py from $(hostname)"
 fi
+
+# don't exit until all ranks on all nodes complete.
+dcount=$(find $GLOBAL_PREFIX/save/$PBS_JOBID/ -name "*.tar.gz" | wc -l)
+while [[ $dcount != $NN ]] ; do
+	sleep 10
+done
