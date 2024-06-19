@@ -1,0 +1,9 @@
+
+test-1.submit::
+This does: `qsub test-1.job`
+
+test-1.job::
+This runs `mpiexec ... test-1.sh`
+
+test-1.sh::
+This is the application script.  It is run in parallel.
