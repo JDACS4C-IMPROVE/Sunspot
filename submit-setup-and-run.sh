@@ -10,8 +10,8 @@
 # PARTITION="by_drug"
 
 echo "$(date) PBS_JOBID $PBS_JOBID"
-NN=$(cat $PBS_NODEFILE | wc -l)
-PPN=12    # 12
+export NN=$(cat $PBS_NODEFILE | wc -l)
+export PPN=12    # 12
 
 echo "$(date) NUM NODES $NN"
 echo "$(date) PPN $PPN"
