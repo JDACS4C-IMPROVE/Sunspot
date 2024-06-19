@@ -1,0 +1,18 @@
+#!/bin/bash -l
+set -eu
+
+echo PWD $PWD
+echo HOST $( hostname )
+
+cd ~/proj/Sunspot/mpi-bash
+
+# source /usr/share/lmod/8.7.34/init/bash
+module list
+module load cray-pals
+
+PATH=~wozniak/Public/sfw/sunspot/MPI-Bash/bin:$PATH
+
+which mpiexec mpibash
+
+set -x
+mpiexec -n 1 mpibash ./test-1.sh
