@@ -20,12 +20,12 @@ fi
 
 if (( PALS_RANKID < 14 ))
 then
-  sleep 1
+  sleep 10
   printf "EXIT on %3i %s\n" $PALS_RANKID $( hostname )
   exit 0
 fi
 
-sleep 1
+sleep 10m
 
 if (( USE_MPI ))
 then
