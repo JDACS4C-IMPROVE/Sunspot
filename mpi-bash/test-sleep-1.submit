@@ -1,0 +1,12 @@
+
+PROJECT=${PROJECT:-candle_aesp_CNDA}
+
+Q_FLAGS=(
+  -l select=4
+  -l walltime=00:15:00
+  -A $PROJECT
+  -q workq
+  -j oe
+)
+
+qsub ${Q_FLAGS[@]} ./test-sleep-1.job
