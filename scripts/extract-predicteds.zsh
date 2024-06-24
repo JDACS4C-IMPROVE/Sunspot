@@ -14,23 +14,42 @@ fi
 OUTPUT=$1
 
 TGZS=( **/*.tar.gz )
-print "TOTAL: ${#TGZS}"
+TOTAL=${#TGZS}
+print "TOTAL: ${TOTAL}"
 
 renice --priority 19 ${$}
 
-COUNT=1
+T=$( mktemp --tmpdir=/tmp/$USER )
+
+COUNT=0
 for TGZ in ${TGZS}
 do
-  printf "%5i / %i : %s\n" ${COUNT} ${TOTAL} ${TGZ}
+  (( ++ COUNT ))
+  printf "COUNT: %5i / %i : %s\n" ${COUNT} ${TOTAL} ${TGZ}
   # Get dirname:
   DIR=${TGZ:h}
-  # print $DIR
-  if ! tar --wildcards -tf ${TGZ} "*predicted.tsv" > /dev/null
+  if [[ -d ${OUTPUT}/${DIR} ]]
   then
+    print "EXISTS:  ${OUTPUT}/${DIR}"
     continue
   fi
-  tar --wildcards -C ${OUTPUT} -xvf ${TGZ} "*predicted.tsv"
-  TSVS=( $( find ${OUTPUT} -name predicted.tsv ) )
-  print "EXTRACTED: ${#TSVS}"
-  (( COUNT ++ ))
+  print "DIR:     ${DIR}"
+  gunzip --stdout ${TGZ} > ${T}
+  print "CHECK..."
+  if ! tar --wildcards -tf ${T} "*predicted.tsv" > /dev/null
+  then
+    print "No predicted.tsv: SKIPPING"
+    continue
+  fi
+  mkdir -pv ${OUTPUT}/${DIR}
+  # Can use --keep-old-files to abort on file overwrites
+  #     but existing TGZs contain multiples
+  tar --wildcards -C ${OUTPUT}/${DIR} \
+      -v -xf ${T} "*predicted.tsv" "*python.log"
+  TSVS=( $( find ${OUTPUT}/${DIR} -name predicted.tsv ) )
+  print "EXTRACTED TSVs: ${#TSVS}"
+  print
+  # if (( COUNT == 5 )) exit
 done
+
+rm ${T}
