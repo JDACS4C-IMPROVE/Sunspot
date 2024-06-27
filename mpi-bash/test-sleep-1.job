@@ -1,0 +1,24 @@
+#!/bin/bash -l
+
+module list
+module load cray-pals
+
+set -eu
+
+echo PWD $PWD
+echo HOST $( hostname )
+
+cd ~/proj/Sunspot/mpi-bash
+
+PATH=~wozniak/Public/sfw/sunspot/MPI-Bash/bin:$PATH
+
+which mpiexec mpibash
+
+FMT="+%Y-%m-%d %H:%M:%S"
+
+set +e
+
+echo $( date "$FMT" ) MPIEXEC START
+mpiexec -n 48 -ppn 12 mpibash ./test-sleep-1.sh
+CODE=$?
+echo $( date "$FMT" ) MPIEXEC STOP CODE: $CODE
