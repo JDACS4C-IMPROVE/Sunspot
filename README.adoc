@@ -11,6 +11,10 @@
 . git checkout issue-38  = Fix for modern TensorFlow
 . pip install /path/to/candle_lib
 
+=== For create_uno_h5
+
+. pip install pytables
+
 == Normal Uno usage
 
 . Clone git@github.com:ECP-CANDLE/Benchmarks.git
