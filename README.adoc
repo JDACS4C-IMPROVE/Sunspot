@@ -35,3 +35,22 @@ $ export PYTHONPATH=/path/to/Benchmarks/Pilot1/Uno
 ----
 $ python ./uno_baseline_keras2.py
 ----
+
+== Known issues
+
+On Lambda, there is some issue with TensorFlow at compile time about:
+
+----
+OperatorNotAllowedInGraphError: Using a symbolic `tf.Tensor` as a Python `bool` is not allowed.
+----
+
+Apply:
+
+----
+         logger.info("COMPILE")
+         model.compile(
+-            loss=args.loss, optimizer=optimizer, metrics=[candle.mae, candle.r2]
++            loss=args.loss, optimizer=optimizer,
++            metrics=[tf.keras.metrics.mean_absolute_error]
+         )
+----
