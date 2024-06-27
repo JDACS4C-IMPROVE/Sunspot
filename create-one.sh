@@ -1,8 +1,11 @@
 #!/bin/bash
+set -eu
 
 INFILE=$1
-PARTITION="by_drug" # $2
 START_INDEX=$2
+
+# Hard-coded in this script
+PARTITION="by_drug"
 
 OUTFILE=dataset.h5
 GLOBAL_PREFIX="."
@@ -25,7 +28,7 @@ ARGS=(
   --outfile   $OUTFILE
   --partition $PARTITION
   --pals_rank $START_INDEX
-}
+)
 
 set -x
-python ./create_uno_h5.py ${ARGS[@]} 2>&1 | tee create.log
+python ./create_uno_h5.py ${ARGS[@]} |& tee create.log
