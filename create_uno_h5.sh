@@ -17,4 +17,5 @@ START_INDEX=$((PALS_RANKID + OFFSET))
 
 echo "$(date) START_INDEX ${START_INDEX}"
 echo "python ./create_uno_h5.py --infile $INFILE --outfile $LOCAL_PREFIX/$OUTFILE --partition $PARTITION --pals_rank ${START_INDEX} > ${GLOBAL_PREFIX}/${OUTFILE}.log"
-python ./create_uno_h5.py --infile $INFILE --outfile $LOCAL_PREFIX/$OUTFILE --partition $PARTITION --pals_rank ${START_INDEX} > ${GLOBAL_PREFIX}/${PBS_JOBID}.${OUTFILE}.log
+python ./create_uno_h5.py --infile $INFILE --outfile $LOCAL_PREFIX/$OUTFILE --partition $PARTITION --pals_rank ${START_INDEX}
+# python ./create_uno_h5.py --infile $INFILE --outfile $LOCAL_PREFIX/$OUTFILE --partition $PARTITION --pals_rank ${START_INDEX} > ${GLOBAL_PREFIX}/${PBS_JOBID}.${OUTFILE}.log

@@ -88,7 +88,9 @@ if [[ "$_MPI_RANKID" == 0 ]] ; then
 fi
 
 # don't exit until all ranks on all nodes complete.
+mkdir -p $GLOBAL_PREFIX/save/$PBS_JOBID
 dcount=$(find $GLOBAL_PREFIX/save/$PBS_JOBID/ -name "*.tar.gz" | wc -l)
 while [[ $dcount != $NN ]] ; do
-	sleep 10
+	sleep 60
+	dcount=$(find $GLOBAL_PREFIX/save/$PBS_JOBID/ -name "*.tar.gz" | wc -l)
 done
