@@ -130,6 +130,6 @@ def spearman_clustered(df, cell, n):
 
     mae = sum1 / n
     denominator = (n*(n**2 - 1))
-    spearman = 1 - 6*diff2 / denominator
+    spearman = 1 - 6 * sum2 / denominator
     print("denominator: %i" % denominator)
     return (mae, spearman)
