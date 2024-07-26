@@ -1,8 +1,37 @@
 
 == Usage
 
+This is based on:
+
+https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient
+
+but we extend it so that the top `n` predicted ranks are matched against the actual ranks even if an actual rank is not in the top `n`
+
+=== List the available cells
+
+----
+$ python list_cells.py summary_predicted.all.tsv | column
+CO-006  CO-039  CO-060  CO-118  CO-153  CO-173  CR-010  HN-045  HN-064  HN-158  HN-185  HN-244
+CO-017  CO-042  CO-066  CO-119  CO-161  CO-174  CR-029  HN-049  HN-067  HN-161  HN-235  HN-252
+CO-031  CO-045  CO-071  CO-120  CO-163  CO-175  CR-034  HN-051  HN-069  HN-179  HN-237  HN-264
+CO-034  CO-049  CO-103  CO-152  CO-171  CR-007  HN-044  HN-052  HN-144  HN-184  HN-239
+----
+
+=== Run a single Spearman
+
 See:
 
 ----
-$ python spearman.py -h
+$ python do_spearman.py -h
 ----
+
+E.g.,
+
+----
+$ python do_spearman.py summary_predicted.all.tsv CR-029 3
+original dataframe length: 1269
+mae:       3.667
+spearman:  0.750
+----
+
+=== Run Spearman for all cells
