@@ -1,0 +1,8 @@
+
+== Usage
+
+See:
+
+----
+$ python spearman.py -h
+----
