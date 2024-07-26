@@ -56,7 +56,7 @@ def spearman(df, cell, n):
     for i in range(0, n):
         drug = rank_actual.iloc[i][2]
         #print("drug ", drug)
-        match = rank_actual.loc[rank_predict[2] == drug]
+        match = rank_predict.loc[rank_predict[2] == drug]
         # print("match ", match.index.item())
         diff  = abs(i - match.index.item())
         sum1 += diff
@@ -70,6 +70,24 @@ def spearman(df, cell, n):
     spearman = 1 - 6*diff2 / denominator
     print("denominator: %i" % denominator)
     return (mae, spearman)
+
+
+def cluster(df, n):
+    df['cluster_rank'] = list(range(len(df)))  # Initialize column
+    for i in range(0, n):
+        drug = df.iloc[i][2]
+        mean = float(df.iloc[i][3])
+        std  = float(df.iloc[i][4])
+        print("drug ", drug, "mean ", mean, "std ", std)
+        matches = [i]
+        for j in range(0, n):
+            if i == j: continue
+            r = 1 * (std + float(df.iloc[j][4]))
+            if abs(mean - float(df.iloc[j][3])) < r:
+                print("cluster with: ", df.iloc[j][2])
+                matches.append(j)
+        df['cluster_rank'][i] = sum(matches)/len(matches)
+
 
 def spearman_clustered(df, cell, n):
     """
@@ -97,19 +115,20 @@ def spearman_clustered(df, cell, n):
     # Sum of difference squares (Σ d^2)
     sum2 = 0
 
+    cluster(rank_predict, n)
+    print(str(rank_predict[0:n][[1,2,3,4,'cluster_rank']]))
+
     for i in range(0, n):
         drug = rank_actual.iloc[i][2]
         #print("drug ", drug)
-        match = rank_actual.loc[rank_predict[2] == drug]
-        # print("match ", match.index.item())
-        diff  = abs(i - match.index.item())
+        match = rank_predict.loc[rank_predict[2] == drug]
+        diff  = abs(i - match.iloc[0]['cluster_rank'])
         sum1 += diff
         diff2 = diff ** 2
         print("diff2 ", diff2)
         sum2 += diff2
-        # print("match ", str(match), " is ", )
 
-    mae = (sum1/n)
+    mae = sum1 / n
     denominator = (n*(n**2 - 1))
     spearman = 1 - 6*diff2 / denominator
     print("denominator: %i" % denominator)
