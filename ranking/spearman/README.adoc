@@ -5,7 +5,7 @@ This is based on:
 
 https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient
 
-but we extend it so that the top `n` predicted ranks are matched against the actual ranks even if an actual rank is not in the top `n`
+but we extend it so that the top `n` actual ranks are matched against the predicted ranks even if a predicted rank is not in the top `n`.
 
 === List the available cells
 
