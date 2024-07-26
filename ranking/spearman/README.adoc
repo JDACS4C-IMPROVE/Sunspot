@@ -35,3 +35,37 @@ spearman:  0.750
 ----
 
 === Run Spearman for all cells
+
+=== Clustered Spearman
+
+First, cluster the predicted records.  If two records have an AUC difference that is less than the average stddev of the pair, their effective rank is replaced (clustered) by the average of their ranks.  This is applied for clusters of any size.
+
+Then, we apply Spearman on the effective ranks.
+
+Original data:
+
+----
+        1          2       3       4  cluster_rank
+0  HN-235   Drug_194  0.3997  0.0514      1.333333
+1  HN-235   Drug_988  0.4166  0.0443      1.500000
+2  HN-235  Drug_1105  0.5291   0.074      2.000000
+3  HN-235  Drug_1127   0.532  0.0943      1.500000
+
+mae:       2.083
+spearman:  0.775
+----
+
+Modified data row 0, column 3 (the mean AUC for HN-235 x Drug_988):
+
+----
+        1          2       3       4  cluster_rank
+0  HN-235   Drug_988  0.3990  0.0443      1.333333
+1  HN-235   Drug_194  0.3997  0.0514      1.333333
+2  HN-235  Drug_1105  0.5291   0.074      2.500000
+3  HN-235  Drug_1127   0.532  0.0943      1.500000
+
+mae:       2.125
+spearman:  0.775
+----
+
+Note that the ordering has changed, the MAE has changed, but the Spearman has not, because the records 0 and 1 were clustered because the small difference in means was within the range of their stddevs.
